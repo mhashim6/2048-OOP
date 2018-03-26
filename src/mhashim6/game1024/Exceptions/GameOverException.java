@@ -1,11 +1,11 @@
 package mhashim6.game1024.Exceptions;
 
 @SuppressWarnings("serial")
-public class GameOverExeption extends RuntimeException {
+public class GameOverException extends RuntimeException {
 
 	private String message;
 
-	public GameOverExeption(String message) {
+	public GameOverException(String message) {
 		this.message = message;
 	}
 

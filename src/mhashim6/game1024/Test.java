@@ -1,21 +1,20 @@
 package mhashim6.game1024;
 
-import mhashim6.game1024.Exceptions.GameOverExeption;
-import mhashim6.game1024.wrappers.Pearl;
+import mhashim6.game1024.Exceptions.GameOverException;
 
 public class Test {
 
 	public static void main(String[] args) {
 
-		Model1024 model = new AdvancedGameModel();
+		Game model = new GameImpl(11, 4);
 
 		long start = System.currentTimeMillis();
 
-		printPearls(model.startGame());
+		printPearls(model.start());
 
 		int i = 0;
 		try { //dude perfect
-			for (;; i++) {
+			for (; ; i++) {
 				System.out.println((i + 1) + ")\nUP");
 				printPearls(model.swipeUp());
 
@@ -29,23 +28,20 @@ public class Test {
 				printPearls(model.swipeLeft());
 
 				System.out.println("UNDO");
-				printPearls(model.undoSwipe());
+				printPearls(model.undo());
 			}
-		}
-		catch (GameOverExeption goe) {
+		} catch (GameOverException goe) {
 			System.out.println("\n-" + goe.toString());
-		}
-		finally {
+		} finally {
 			long end = System.currentTimeMillis();
 			System.out.printf("%d turns in time: %d ms", (i + 1), (end - start));
-
 		}
 	}
 
-	private static void printPearls(Pearl[][] pearls) {
-		int gridSize = pearls.length;
+	private static void printPearls(Tile[][] tiles) {
+		int gridSize = tiles.length;
 		for (int i = 0; i < gridSize; i++) {
-			for (Pearl p : pearls[i])
+			for (Tile p : tiles[i])
 				if (p != null)
 					System.out.print("\t" + p.value());
 				else
