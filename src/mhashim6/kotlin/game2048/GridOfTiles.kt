@@ -22,22 +22,24 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
 
     fun copy() = gridOfTiles.copyOf()
 
-    /** prepare undo */
+    /** prepares undo */
     fun takeSnapshot() {
         clearSnapshots()
-        gridOfTiles.forEachIndexed2D { i, j, tile: Tile? ->
-            if (tile != null)
-                snapshotTiles[i][j] = TileImpl(tile)
-        }
+        gridOfTiles.withIndex2D()
+                .filter { it.value != null }
+                .forEach { it ->
+                    snapshotTiles[it.x][it.y] = TileImpl(it.value!!)
+                }
     }
 
     /** undo */
     fun useSnapshot() {
         clear()
-        snapshotTiles.forEachIndexed2D { i, j, tile: Tile? ->
-            if (tile != null)
-                gridOfTiles[i][j] = TileImpl(tile)
-        }
+        snapshotTiles.withIndex2D()
+                .filter { it.value != null }
+                .forEach { it ->
+                    gridOfTiles[it.x][it.y] = TileImpl(it.value!!)
+                }
     }
 
     fun newTile() {
