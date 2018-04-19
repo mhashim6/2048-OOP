@@ -4,7 +4,7 @@ object oriented implementation of 2048 game in ~~java~~ kotlin.
 
 check basic implementation in  [Sample.kt](https://github.com/mhashim6/2048-OOP/blob/master/src/mhashim6/game1024/Sample.kt).
 
-output (from a loop, not AI):
+output snippet (from a loop, not AI):
 ```
 UP
 	4	4	64	256
