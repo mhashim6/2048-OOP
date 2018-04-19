@@ -1,19 +1,18 @@
 package mhashim6.game1024
 
-import mhashim6.game1024.Exceptions.GameOverException
+import mhashim6.game1024.exceptions.GameOverException
+import mhashim6.game1024.Direction.*
+
 
 class GameImpl(power: Int, gridSize: Int) : Game {
-
-	val maxValue: Int = Math.pow(2.0, power.toDouble()).toInt() //11 -> 2048
-
 	private val gridOfTiles: GridOfTiles = GridOfTiles(gridSize)
 
-	var movesCount: Int = 0
-		private set
+	private val maxValue: Int = Math.pow(2.0, power.toDouble()).toInt() //11 -> 2048
+
+	private var movesCount: Int = 0
+	override fun movesCount() = movesCount
 
 	private var isStarted: Boolean = false
-	override var isGameOver: Boolean = false
-	override var isVictory: Boolean = false
 
 	override fun start(): Array<Array<Tile?>> {
 		if (isStarted)
@@ -23,68 +22,63 @@ class GameImpl(power: Int, gridSize: Int) : Game {
 		gridOfTiles.newTile()
 		gridOfTiles.newTile()
 
-		return gridOfTiles.get()
+		return gridOfTiles.copy()
 	}
 
 	override fun swipeUp(): Array<Array<Tile?>> {
-		swipe(Direction.UP)
-		return gridOfTiles.get()
+		swipe(UP)
+		return gridOfTiles.copy()
 	}
 
 	override fun swipeDown(): Array<Array<Tile?>> {
-		swipe(Direction.DOWN)
-		return gridOfTiles.get()
+		swipe(DOWN)
+		return gridOfTiles.copy()
 	}
 
 	override fun swipeRight(): Array<Array<Tile?>> {
-		swipe(Direction.RIGHT)
-		return gridOfTiles.get()
+		swipe(RIGHT)
+		return gridOfTiles.copy()
 	}
 
 	override fun swipeLeft(): Array<Array<Tile?>> {
-		swipe(Direction.LEFT)
-		return gridOfTiles.get()
+		swipe(LEFT)
+		return gridOfTiles.copy()
 	}
 
 	private fun swipe(direction: Direction) {
 		gridOfTiles.takeSnapshot()
-
 		gridOfTiles.migrate(direction)
 
 		movesCount++
 
-		checkForVictory(gridOfTiles.currentMax)
+		updateState()
+		gridOfTiles.newTile()
+	}
 
-		try { //TODO better
-			gridOfTiles.newTile()
-		} catch (e: IllegalArgumentException) { //no empty spaces.
-			checkGameOver()
-		}
+	private fun updateState() {
+		movesCount++
+
+		if (isVictory(gridOfTiles.currentMax))
+			throw GameOverException("You Win!")
+
+		if (!gridOfTiles.isMovingPossible)
+			throw GameOverException("You Lose!")
 	}
 
 	override fun undo(): Array<Array<Tile?>> {
-		gridOfTiles.useSnapshotTiles()
-		return gridOfTiles.get()
+		gridOfTiles.useSnapshot()
+		return gridOfTiles.copy()
 	}
 
 	override fun reset() {
 		if (isStarted) {
 			gridOfTiles.clear()
 
-			isVictory = false
-			isGameOver = false
 			isStarted = false
 
 			movesCount = 0
 		}
 	}
 
-	private fun checkGameOver() {
-		if (!gridOfTiles.isMovingPossible)
-			throw GameOverException("You lost")
-	}
-
-	private fun checkForVictory(value: Int) { //TODO
-		isVictory = value >= maxValue
-	}
+	private fun isVictory(value: Int) = value >= maxValue
 }

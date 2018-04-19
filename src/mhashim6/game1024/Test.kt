@@ -1,6 +1,6 @@
 package mhashim6.game1024
 
-import mhashim6.game1024.Exceptions.GameOverException
+import mhashim6.game1024.exceptions.GameOverException
 
 fun main(args: Array<String>) {
 
@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
 	printPearls(model.start())
 
 	var i = 0
-	try { //dude perfect
+	try {
 		while (true) {
 			println("${i + 1})\nUP")
 			printPearls(model.swipeUp())

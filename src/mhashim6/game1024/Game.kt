@@ -2,9 +2,7 @@ package mhashim6.game1024
 
 interface Game {
 
-	var isGameOver: Boolean
-
-	var isVictory: Boolean
+	fun movesCount():Int
 
 	fun start(): Array<Array<Tile?>>
 
