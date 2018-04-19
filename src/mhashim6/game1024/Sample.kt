@@ -4,29 +4,29 @@ import mhashim6.game1024.exceptions.GameOverException
 
 fun main(args: Array<String>) {
 
-	val model = GameImpl(11, 4)
+	val game = GameImpl(power = 11, gridSize = 4)
 
 	val start = System.currentTimeMillis()
 
-	printPearls(model.start())
+	printTiles(game.start())
 
 	var i = 0
 	try {
 		while (true) {
 			println("${i + 1})\nUP")
-			printPearls(model.swipeUp())
+			printTiles(game.swipeUp())
 
 			println("RIGHT")
-			printPearls(model.swipeRight())
+			printTiles(game.swipeRight())
 
 			println("DOWN")
-			printPearls(model.swipeDown())
+			printTiles(game.swipeDown())
 
 			println("LEFT")
-			printPearls(model.swipeLeft())
+			printTiles(game.swipeLeft())
 
 			println("UNDO")
-			printPearls(model.undo())
+			printTiles(game.undo())
 			i++
 		}
 	} catch (goe: GameOverException) {
@@ -37,7 +37,7 @@ fun main(args: Array<String>) {
 	}
 }
 
-private fun printPearls(tiles: Array<Array<Tile?>>) {
+private fun printTiles(tiles: Array<Array<Tile?>>) {
 
 	tiles.forEach { arrayOfTiles ->
 		arrayOfTiles.forEach { tile ->

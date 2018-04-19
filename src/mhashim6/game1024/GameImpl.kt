@@ -5,12 +5,12 @@ import mhashim6.game1024.Direction.*
 
 
 class GameImpl(power: Int, gridSize: Int) : Game {
-	private val gridOfTiles: GridOfTiles = GridOfTiles(gridSize)
+	private val grid: GridOfTiles = GridOfTiles(gridSize)
 
 	private val maxValue: Int = Math.pow(2.0, power.toDouble()).toInt() //11 -> 2048
 
-	private var movesCount: Int = 0
-	override fun movesCount() = movesCount
+	override var movesCount: Int = 0
+		private set
 
 	private var isStarted: Boolean = false
 
@@ -19,60 +19,60 @@ class GameImpl(power: Int, gridSize: Int) : Game {
 			throw RuntimeException("The game is already on") //TODO better
 		isStarted = true
 
-		gridOfTiles.newTile()
-		gridOfTiles.newTile()
+		grid.newTile()
+		grid.newTile()
 
-		return gridOfTiles.copy()
+		return grid.copy()
 	}
 
 	override fun swipeUp(): Array<Array<Tile?>> {
 		swipe(UP)
-		return gridOfTiles.copy()
+		return grid.copy()
 	}
 
 	override fun swipeDown(): Array<Array<Tile?>> {
 		swipe(DOWN)
-		return gridOfTiles.copy()
+		return grid.copy()
 	}
 
 	override fun swipeRight(): Array<Array<Tile?>> {
 		swipe(RIGHT)
-		return gridOfTiles.copy()
+		return grid.copy()
 	}
 
 	override fun swipeLeft(): Array<Array<Tile?>> {
 		swipe(LEFT)
-		return gridOfTiles.copy()
+		return grid.copy()
 	}
 
 	private fun swipe(direction: Direction) {
-		gridOfTiles.takeSnapshot()
-		gridOfTiles.migrate(direction)
+		grid.takeSnapshot()
+		grid.migrate(direction)
 
 		movesCount++
 
 		updateState()
-		gridOfTiles.newTile()
+		grid.newTile()
 	}
 
 	private fun updateState() {
 		movesCount++
 
-		if (isVictory(gridOfTiles.currentMax))
+		if (isVictory(grid.currentMax))
 			throw GameOverException("You Win!")
 
-		if (!gridOfTiles.isMovingPossible)
+		if (!grid.isMovingPossible)
 			throw GameOverException("You Lose!")
 	}
 
 	override fun undo(): Array<Array<Tile?>> {
-		gridOfTiles.useSnapshot()
-		return gridOfTiles.copy()
+		grid.useSnapshot()
+		return grid.copy()
 	}
 
 	override fun reset() {
 		if (isStarted) {
-			gridOfTiles.clear()
+			grid.clear()
 
 			isStarted = false
 

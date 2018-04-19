@@ -2,7 +2,7 @@ package mhashim6.game1024
 
 interface Game {
 
-	fun movesCount():Int
+	val movesCount: Int
 
 	fun start(): Array<Array<Tile?>>
 
