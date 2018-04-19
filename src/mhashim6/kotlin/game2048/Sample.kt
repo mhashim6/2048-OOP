@@ -37,13 +37,10 @@ fun main(args: Array<String>) {
     }
 }
 
-private fun printTiles(tiles: Array<Array<Tile?>>) {
+private fun printTiles(tiles: Array<Array<Tile>>) {
     tiles.forEach { arrayOfTiles ->
         arrayOfTiles.forEach { tile ->
-            if (tile != null)
-                print("\t" + tile.value())
-            else
-                print("\t" + 0)
+            print("\t" + tile.value())
         }
         println()
     }

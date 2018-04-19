@@ -1,17 +1,17 @@
 package mhashim6.kotlin.game2048
 
-class TileImpl : Tile {
+internal class TileImpl : Tile {
 
     override var position: Position
 
     private var value: Int = 0
 
-    internal constructor(position: Position) {
+    constructor(position: Position) {
         this.position = position
         value = MIN_VALUE
     }
 
-    internal constructor(tile: Tile) {
+    constructor(tile: Tile) {
         this.position = Position(tile.position)
         value = tile.value()
     }

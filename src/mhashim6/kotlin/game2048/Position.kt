@@ -35,17 +35,7 @@ class Position {
         return 31 * row + col
     }
 
-    companion object OrderedSort {
-        /**the smallest row first*/
-        val UP_ORDER = { pos: Position -> pos.row }
-
-        /**the biggest row first*/
-        val DOWN_ORDER = { pos: Position -> -pos.row }
-
-        /**the biggest column first*/
-        val RIGHT_ORDER = { pos: Position -> -pos.col }
-
-        /**the smallest column first*/
-        val LEFT_ORDER = { pos: Position -> pos.col }
+    companion object {
+        val empty = Position(0, 0)
     }
 }

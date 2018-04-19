@@ -14,7 +14,7 @@ class GameImpl(power: Int, gridSize: Int) : Game {
 
     private var isStarted: Boolean = false
 
-    override fun start(): Array<Array<Tile?>> {
+    override fun start(): Array<Array<Tile>> {
         if (isStarted)
             throw RuntimeException("The game is already on") //TODO better
         isStarted = true
@@ -25,22 +25,22 @@ class GameImpl(power: Int, gridSize: Int) : Game {
         return grid.copy()
     }
 
-    override fun swipeUp(): Array<Array<Tile?>> {
+    override fun swipeUp(): Array<Array<Tile>> {
         swipe(UP)
         return grid.copy()
     }
 
-    override fun swipeDown(): Array<Array<Tile?>> {
+    override fun swipeDown(): Array<Array<Tile>> {
         swipe(DOWN)
         return grid.copy()
     }
 
-    override fun swipeRight(): Array<Array<Tile?>> {
+    override fun swipeRight(): Array<Array<Tile>> {
         swipe(RIGHT)
         return grid.copy()
     }
 
-    override fun swipeLeft(): Array<Array<Tile?>> {
+    override fun swipeLeft(): Array<Array<Tile>> {
         swipe(LEFT)
         return grid.copy()
     }
@@ -65,14 +65,14 @@ class GameImpl(power: Int, gridSize: Int) : Game {
             throw GameOverException("You Lose!")
     }
 
-    override fun undo(): Array<Array<Tile?>> {
+    override fun undo(): Array<Array<Tile>> {
         grid.useSnapshot()
         return grid.copy()
     }
 
     override fun reset() {
         if (isStarted) {
-            grid.clear()
+            grid.reset()
 
             isStarted = false
 
