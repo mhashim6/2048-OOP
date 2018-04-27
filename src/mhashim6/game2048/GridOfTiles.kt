@@ -1,31 +1,27 @@
-package mhashim6.kotlin.game2048
+package mhashim6.game2048
 
-import mhashim6.kotlin.game2048.Direction.*
+import mhashim6.game2048.Direction.*
 import mhashim6.kotlin.arrays2d.asSequence2D
-import mhashim6.kotlin.arrays2d.forEachIndexed2D
+import mhashim6.kotlin.arrays2d.matrix
 import mhashim6.kotlin.arrays2d.withIndex2D
 import java.util.*
 
 internal class GridOfTiles constructor(private val x: Int, private val y: Int = x) {
 
-    private lateinit var grid: Array<Array<Tile>>
-    private lateinit var snapshot: Array<Array<Tile>>
-
-    init {
-        reset()
-    }
+    private var matrix = emptyMatrix.copyOf()
+    private var snapshot = emptyMatrix.copyOf()
 
     private val rnd: Random = Random()
 
     var currentMax = 2
         private set
 
-    fun copy() = grid.copyOf()
+    fun copy() = matrix.copyOf()
 
     /** prepares undo */
     fun takeSnapshot() {
         resetSnapshots()
-        grid.withIndex2D()
+        matrix.withIndex2D()
                 .filter { it.value !== EmptyTile }
                 .forEach { it ->
                     snapshot[it.x][it.y] = TileImpl(it.value)
@@ -38,7 +34,7 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
         snapshot.withIndex2D()
                 .filter { it.value !== EmptyTile }
                 .forEach { it ->
-                    grid[it.x][it.y] = TileImpl(it.value)
+                    matrix[it.x][it.y] = TileImpl(it.value)
                 }
     }
 
@@ -53,18 +49,18 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
 
     private fun add(tile: Tile) {
         val pos = tile.position
-        grid[pos.row][pos.col] = tile
+        matrix[pos.row][pos.col] = tile
     }
 
     private fun remove(pos: Position) {
-        grid[pos.row][pos.col] = EmptyTile
+        matrix[pos.row][pos.col] = EmptyTile
     }
 
     private fun getTile(pos: Position) = getTile(pos.row, pos.col)
 
-    private fun getTile(row: Int, col: Int) = grid[row][col]
+    private fun getTile(row: Int, col: Int) = matrix[row][col]
 
-    private fun isPositionEmpty(pos: Position) = (grid[pos.row][pos.col] === EmptyTile)
+    private fun isPositionEmpty(pos: Position) = (matrix[pos.row][pos.col] === EmptyTile)
     // ============================================================
 
     fun migrate(direction: Direction) {
@@ -157,25 +153,23 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
     }
 
     private fun resetGrid() {
-        grid = Array(x) { Array<Tile>(y) { EmptyTile } }
-        grid.forEachIndexed2D { i, j, tile -> tile.position = Position(i, j) }
+        matrix = emptyMatrix.copyOf()
     }
 
     private fun resetSnapshots() {
-        snapshot = Array(x) { Array<Tile>(y) { EmptyTile } }
-        snapshot.forEachIndexed2D { i, j, tile -> tile.position = Position(i, j) }
+        snapshot = emptyMatrix.copyOf()
     }
     // ============================================================
 
     private val emptySpaces: List<Position>
-        get() = grid.withIndex2D()
+        get() = matrix.withIndex2D()
                 .asSequence()
                 .filter { it.value === EmptyTile }
                 .map { Position(it.x, it.y) }
                 .toList()
 
     private val filledPositions: MutableList<Position>
-        get() = grid.asSequence2D()
+        get() = matrix.asSequence2D()
                 .filter { it !== EmptyTile }
                 .map { it.position }
                 .toMutableList()
@@ -185,7 +179,7 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
             if (emptySpaces.isNotEmpty())
                 return true
 
-            grid.forEachIndexed { i, _ ->
+            matrix.forEachIndexed { i, _ ->
                 for (j in 0 until y - 1) {
                     if (compareTiles(i, j, i, j + 1) == 0) //compare neighbors in the same row.
                         return true
@@ -202,14 +196,19 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
     }
 
     private fun compareTiles(row1: Int, col1: Int, row2: Int, col2: Int): Int {
-        return compareTiles(grid[row1][col1], grid[row2][col2])
+        return compareTiles(matrix[row1][col1], matrix[row2][col2])
     }
 
     private fun compareTiles(tile: Tile, another: Tile): Int {
         return tile.compareTo(another)
     }
 
-    companion object OrderedSort {
+    companion object {
+
+        val emptyMatrix = matrix<Tile>(4, 4) { i, j ->
+            EmptyTile.apply { position = Position(i, j) }
+        }
+
         /**the smallest row first*/
         val UP_ORDER = { pos: Position -> pos.row }
 

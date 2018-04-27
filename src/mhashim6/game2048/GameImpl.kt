@@ -1,7 +1,7 @@
-package mhashim6.kotlin.game2048
+package mhashim6.game2048
 
-import mhashim6.kotlin.game2048.exceptions.GameOverException
-import mhashim6.kotlin.game2048.Direction.*
+import mhashim6.game2048.exceptions.GameOverException
+import mhashim6.game2048.Direction.*
 
 
 class GameImpl(power: Int, gridSize: Int) : Game {

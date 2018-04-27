@@ -1,4 +1,4 @@
-package mhashim6.kotlin.game2048
+package mhashim6.game2048
 
 data class Position(val row: Int = 0, val col: Int = 0) {
 
