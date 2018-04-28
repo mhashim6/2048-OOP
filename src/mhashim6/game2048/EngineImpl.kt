@@ -1,10 +1,8 @@
 package mhashim6.game2048
 
 import mhashim6.game2048.Direction.*
-import mhashim6.kotlin.arrays2d.asSequence2D
 import mhashim6.kotlin.arrays2d.forEachIndexed2D
 import mhashim6.kotlin.arrays2d.matrix
-import mhashim6.kotlin.arrays2d.withIndex2D
 import java.util.*
 
 internal class EngineImpl constructor(private val x: Int, private val y: Int = x) : Engine {
@@ -156,17 +154,24 @@ internal class EngineImpl constructor(private val x: Int, private val y: Int = x
     // ============================================================
 
     private val vacancies: List<Position>
-        get() = matrix.withIndex2D()
-                .asSequence()
-                .filter { it.value === EmptyTile }
-                .map { Position(it.x, it.y) }
-                .toList()
+        get() {
+            val emptySpaces = mutableListOf<Position>()
+            matrix.forEachIndexed2D { i, j, tile ->
+                if (tile === EmptyTile)
+                    emptySpaces.add(Position(i, j))
+            }
+            return emptySpaces
+        }
 
     private val filledPositions: MutableList<Position>
-        get() = matrix.asSequence2D()
-                .filter { it !== EmptyTile }
-                .map { it.position }
-                .toMutableList()
+        get() {
+            val positions = ArrayList<Position>()
+            matrix.forEachIndexed2D { i, j, tile ->
+                if (tile !== EmptyTile)
+                    positions.add(Position(i, j))
+            }
+            return positions
+        }
 
     override val isMovingPossible: Boolean
         get() {
