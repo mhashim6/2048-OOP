@@ -2,44 +2,36 @@ package mhashim6.game2048
 
 import mhashim6.game2048.Direction.*
 import mhashim6.kotlin.arrays2d.asSequence2D
+import mhashim6.kotlin.arrays2d.forEachIndexed2D
 import mhashim6.kotlin.arrays2d.matrix
 import mhashim6.kotlin.arrays2d.withIndex2D
 import java.util.*
 
-internal class GridOfTiles constructor(private val x: Int, private val y: Int = x) {
+internal class EngineImpl constructor(private val x: Int, private val y: Int = x) : Engine {
 
     private var matrix = emptyMatrix.copyOf()
     private var snapshot = emptyMatrix.copyOf()
 
     private val rnd: Random = Random()
 
-    var currentMax = 2
+    override var currentMax = 2
         private set
 
-    fun copy() = matrix.copyOf()
+    override val copy
+        get() = matrix.copyOf()
 
-    /** prepares undo */
-    fun takeSnapshot() {
+    override fun takeSnapshot() {
         resetSnapshots()
-        matrix.withIndex2D()
-                .filter { it.value !== EmptyTile }
-                .forEach { it ->
-                    snapshot[it.x][it.y] = TileImpl(it.value)
-                }
+        snapshot = matrix.copyOf()
     }
 
-    /** undo */
-    fun useSnapshot() {
+    override fun useSnapshot() {
         resetGrid()
-        snapshot.withIndex2D()
-                .filter { it.value !== EmptyTile }
-                .forEach { it ->
-                    matrix[it.x][it.y] = TileImpl(it.value)
-                }
+        matrix = snapshot.copyOf()
     }
 
-    fun newTile() {
-        val positions = emptySpaces
+    override fun spawn() {
+        val positions = vacancies
         if (positions.isEmpty())
             return
 
@@ -63,7 +55,7 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
     private fun isPositionEmpty(pos: Position) = (matrix[pos.row][pos.col] === EmptyTile)
     // ============================================================
 
-    fun migrate(direction: Direction) {
+    override fun migrate(direction: Direction) {
         val positions = filledPositions
         sortByDirection(positions, direction)
         positions.forEach { migrateSingle(it, direction) }
@@ -144,10 +136,12 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
 
     private fun merge(pos: Position, target: Position) {
         remove(pos)
-        currentMax = getTile(target).x2()
+        val mergedValue = getTile(target).x2()
+        if (mergedValue > currentMax)
+            currentMax = mergedValue
     }
 
-    fun reset() {
+    override fun reset() {
         resetGrid()
         resetSnapshots()
     }
@@ -161,7 +155,7 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
     }
     // ============================================================
 
-    private val emptySpaces: List<Position>
+    private val vacancies: List<Position>
         get() = matrix.withIndex2D()
                 .asSequence()
                 .filter { it.value === EmptyTile }
@@ -174,9 +168,9 @@ internal class GridOfTiles constructor(private val x: Int, private val y: Int = 
                 .map { it.position }
                 .toMutableList()
 
-    val isMovingPossible: Boolean
+    override val isMovingPossible: Boolean
         get() {
-            if (emptySpaces.isNotEmpty())
+            if (vacancies.isNotEmpty())
                 return true
 
             matrix.forEachIndexed { i, _ ->

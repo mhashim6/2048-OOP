@@ -5,7 +5,7 @@ import mhashim6.game2048.Direction.*
 
 
 class GameImpl(power: Int, gridSize: Int) : Game {
-    private val grid: GridOfTiles = GridOfTiles(gridSize)
+    private val engine: Engine = EngineImpl(gridSize)
 
     private val maxValue: Int = Math.pow(2.0, power.toDouble()).toInt() //11 -> 2048
 
@@ -19,60 +19,60 @@ class GameImpl(power: Int, gridSize: Int) : Game {
             throw RuntimeException("The game is already on") //TODO better
         isStarted = true
 
-        grid.newTile()
-        grid.newTile()
+        engine.spawn()
+        engine.spawn()
 
-        return grid.copy()
+        return engine.copy
     }
 
     override fun swipeUp(): Array<Array<Tile>> {
         swipe(UP)
-        return grid.copy()
+        return engine.copy
     }
 
     override fun swipeDown(): Array<Array<Tile>> {
         swipe(DOWN)
-        return grid.copy()
+        return engine.copy
     }
 
     override fun swipeRight(): Array<Array<Tile>> {
         swipe(RIGHT)
-        return grid.copy()
+        return engine.copy
     }
 
     override fun swipeLeft(): Array<Array<Tile>> {
         swipe(LEFT)
-        return grid.copy()
+        return engine.copy
     }
 
     private fun swipe(direction: Direction) {
-        grid.takeSnapshot()
-        grid.migrate(direction)
+        engine.takeSnapshot()
+        engine.migrate(direction)
 
         movesCount++
 
         updateState()
-        grid.newTile()
+        engine.spawn()
     }
 
     private fun updateState() {
         movesCount++
 
-        if (isVictory(grid.currentMax))
+        if (isVictory(engine.currentMax))
             throw GameOverException("You Win!")
 
-        if (!grid.isMovingPossible)
+        if (!engine.isMovingPossible)
             throw GameOverException("You Lose!")
     }
 
     override fun undo(): Array<Array<Tile>> {
-        grid.useSnapshot()
-        return grid.copy()
+        engine.useSnapshot()
+        return engine.copy
     }
 
     override fun reset() {
         if (isStarted) {
-            grid.reset()
+            engine.reset()
 
             isStarted = false
 
